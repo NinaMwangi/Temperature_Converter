@@ -42,9 +42,22 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const TextField(
-                      decoration: InputDecoration(hintText: 'Enter Temperature'),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Enter Temperature',
+                        labelText: isFahr 
+                        ? '$inTemp entered in Farhrenheit'
+                        : '$inTemp entered in Celsius'
+                      ),
                       keyboardType: TextInputType.number,
+                      onChanged: (newValue) {
+                        setState(() {
+                          try {
+                            inTemp = double.parse(newValue);
+                          // ignore: empty_catches
+                          } catch (e) {}
+                        });
+                      },
                     ),
                     RadioListTile(
                       value: true,
@@ -67,7 +80,20 @@ class _HomePageState extends State<HomePage> {
                       }
                     ),
                     ElevatedButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        setState(() {
+                          outTemp = isFahr 
+                             ? (inTemp - 32) / (5 / 6) : (inTemp * 9 /5) + 32;
+                        showDialog(
+                          context: context, 
+                          builder: (context) => AlertDialog(
+                            title: const Text('Result'),
+                            content: isFahr 
+                            ? Text('$inTemp Fahrenheit = $outTemp Celsius')
+                            : Text('$inTemp Celsius = $outTemp Fahrenheit')
+                          ));
+                        });
+                      },
                       child: const Text('Convert'),
                     )
                   ],
