@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:temperature_converter/main.dart';
-
+import 'package:uuid/uuid.dart';
+import 'conversion.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +16,39 @@ class _HomePageState extends State<HomePage> {
   // Declaring variables
   double inTemp = 0.0, outTemp = 0.0;
   bool isFahr = true;
+  final List<Conversion> _conversionHistory = [];
+
+  void _convert() {
+    setState(() {
+      if (isFahr) {
+        outTemp = (inTemp - 32) * 5 / 9;
+      } else {
+        outTemp = (inTemp * 9 / 5) + 32;
+      }
+
+      // Restrict output to one decimal place
+      String roundedOutTemp = outTemp.toStringAsFixed(1);
+
+      Conversion newConversion = Conversion(
+        id: const Uuid().v4(),
+        input: inTemp,
+        output: roundedOutTemp,
+        isFahrToCelsius: isFahr,
+        );
+
+      _conversionHistory.insert(0, newConversion);
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Result'),
+          content: isFahr
+              ? Text('$inTemp Fahrenheit = $roundedOutTemp Celsius')
+              : Text('$inTemp Celsius = $roundedOutTemp Fahrenheit'),
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +63,14 @@ class _HomePageState extends State<HomePage> {
             children: [
               const SizedBox(
                 width: 200.0,
-                child: Text("Currency Converter", style:TextStyle(
-                  color: Color.fromARGB(255, 255, 111, 0),
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold
-                   ),
+                child: Text("Temperature Converter",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 255, 111, 0),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
-              //SizedBox(height: 20.0),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                       decoration: InputDecoration(
                         hintText: 'Enter Temperature',
                         labelText: isFahr 
-                        ? '$inTemp entered in Farhrenheit'
+                        ? '$inTemp entered in Fahrenheit'
                         : '$inTemp entered in Celsius'
                       ),
                       keyboardType: TextInputType.number,
@@ -54,7 +87,6 @@ class _HomePageState extends State<HomePage> {
                         setState(() {
                           try {
                             inTemp = double.parse(newValue);
-                          // ignore: empty_catches
                           } catch (e) {}
                         });
                       },
@@ -62,42 +94,82 @@ class _HomePageState extends State<HomePage> {
                     RadioListTile(
                       value: true,
                       groupValue: isFahr,
-                      title: const Text('Fahrenheit'),
+                      title: const Text(
+                        'Fahrenheit', 
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 111, 0),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       onChanged: (newValue){
                         setState(() {
                           isFahr = newValue!;
                         });
                       },
+                      activeColor: Colors.black87,
                     ),
                     RadioListTile(
                       value: false,
                       groupValue: isFahr,
-                      title: const Text('Celsius'),
+                      title: const Text(
+                        'Celsius',
+                        style: TextStyle(
+                          color:Color.fromARGB(255, 255, 111, 0),
+                          fontWeight: FontWeight.bold
+                        ),),
                       onChanged: (newValue){
                         setState(() {
-                          isFahr= newValue!;
-                        });
-                      }
-                    ),
-                    ElevatedButton(
-                      onPressed: (){
-                        setState(() {
-                          outTemp = isFahr 
-                             ? (inTemp - 32) / (5 / 6) : (inTemp * 9 /5) + 32;
-                        showDialog(
-                          context: context, 
-                          builder: (context) => AlertDialog(
-                            title: const Text('Result'),
-                            content: isFahr 
-                            ? Text('$inTemp Fahrenheit = $outTemp Celsius')
-                            : Text('$inTemp Celsius = $outTemp Fahrenheit')
-                          ));
+                          isFahr = newValue!;
                         });
                       },
-                      child: const Text('Convert'),
-                    )
+                      activeColor: Colors.black87,
+                    ),
+                    ElevatedButton(
+                      onPressed: _convert,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 234, 137, 63),
+                      ),
+                      child: const Text(
+                        'Convert',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'History',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 234, 137, 63),
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: ListView.builder(
+                          itemCount: _conversionHistory.length,
+                          itemBuilder: (context, index) {
+                            final conversion = _conversionHistory[index];
+                            return ListTile(
+                              title: Text(
+                                conversion.isFahrToCelsius
+                                  ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
+                                  : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          },
+                          reverse: true,
+                        ),
+                      ),
+                    ),
                   ],
-                )
+                ),
               ),
             ]
           ),
