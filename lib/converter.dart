@@ -17,6 +17,7 @@ class _HomePageState extends State<HomePage> {
   double inTemp = 0.0, outTemp = 0.0;
   bool isFahr = true;
   final List<Conversion> _conversionHistory = [];
+  final TextEditingController _controller = TextEditingController();
 
   void _convert() {
     setState(() {
@@ -47,6 +48,9 @@ class _HomePageState extends State<HomePage> {
               : Text('$inTemp Celsius = $roundedOutTemp Fahrenheit'),
         ),
       );
+
+      // Clear input field after conversion
+      _controller.clear();
     });
   }
 
@@ -54,32 +58,35 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: mainColor,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                width: 200.0,
-                child: Text(
-                  "Temperature Converter",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 255, 111, 0),
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  width: 200.0,
+                  child: Text(
+                    "Temperature Converter",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 255, 111, 0),
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
+                      controller: _controller,
                       decoration: InputDecoration(
                         hintText: 'Enter Temperature',
-                        labelText: isFahr
+                        labelText: isFahr 
                             ? '$inTemp entered in Fahrenheit'
                             : '$inTemp entered in Celsius',
                       ),
@@ -147,33 +154,35 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Expanded(
-                      child: Container(
-                        height: 50.0,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 234, 137, 63),
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: ListView.builder(
-                          itemCount: _conversionHistory.length,
-                          itemBuilder: (context, index) {
-                            final conversion = _conversionHistory[index];
-                            return ListTile(
-                              title: Text(
-                                conversion.isFahrToCelsius
-                                    ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
-                                    : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            );
-                          },
-                        ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 234, 137, 63),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4, // Adjust height accordingly
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _conversionHistory.length,
+                        itemBuilder: (context, index) {
+                          final conversion = _conversionHistory[index];
+                          return ListTile(
+                            title: Text(
+                              conversion.isFahrToCelsius
+                                  ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
+                                  : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        },
+                        reverse: true,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
