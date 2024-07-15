@@ -39,6 +39,9 @@ class _HomePageState extends State<HomePage> {
 
       _conversionHistory.insert(0, newConversion);
 
+      // Clear the input field
+      _controller.clear();
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -48,9 +51,6 @@ class _HomePageState extends State<HomePage> {
               : Text('$inTemp Celsius = $roundedOutTemp Fahrenheit'),
         ),
       );
-
-      // Clear input field after conversion
-      _controller.clear();
     });
   }
 
@@ -58,132 +58,134 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: mainColor,
-      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  width: 200.0,
-                  child: Text(
-                    "Temperature Converter",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 111, 0),
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double screenWidth = constraints.maxWidth;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: screenWidth * 0.8,
+                    child: Text("Temperature Converter",
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 255, 111, 0),
+                        fontSize: screenWidth * 0.08,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
                   ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: 'Enter Temperature',
-                        labelText: isFahr 
-                            ? '$inTemp entered in Fahrenheit'
-                            : '$inTemp entered in Celsius',
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (newValue) {
-                        setState(() {
-                          try {
-                            inTemp = double.parse(newValue);
-                          } catch (e) {}
-                        });
-                      },
-                    ),
-                    RadioListTile(
-                      value: true,
-                      groupValue: isFahr,
-                      title: const Text(
-                        'Fahrenheit',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 111, 0),
-                          fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextField(
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Temperature',
+                            labelText: isFahr 
+                              ? '$inTemp entered in Fahrenheit'
+                              : '$inTemp entered in Celsius'
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (newValue) {
+                            setState(() {
+                              try {
+                                inTemp = double.parse(newValue);
+                              } catch (e) {}
+                            });
+                          },
                         ),
-                      ),
-                      onChanged: (newValue) {
-                        setState(() {
-                          isFahr = newValue!;
-                        });
-                      },
-                      activeColor: Colors.black87,
-                    ),
-                    RadioListTile(
-                      value: false,
-                      groupValue: isFahr,
-                      title: const Text(
-                        'Celsius',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 111, 0),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onChanged: (newValue) {
-                        setState(() {
-                          isFahr = newValue!;
-                        });
-                      },
-                      activeColor: Colors.black87,
-                    ),
-                    ElevatedButton(
-                      onPressed: _convert,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 234, 137, 63),
-                      ),
-                      child: const Text(
-                        'Convert',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'History',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 234, 137, 63),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4, // Adjust height accordingly
-                      ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _conversionHistory.length,
-                        itemBuilder: (context, index) {
-                          final conversion = _conversionHistory[index];
-                          return ListTile(
-                            title: Text(
-                              conversion.isFahrToCelsius
-                                  ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
-                                  : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
-                              style: const TextStyle(color: Colors.white),
+                        RadioListTile(
+                          value: true,
+                          groupValue: isFahr,
+                          title: Text(
+                            'Fahrenheit', 
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 255, 111, 0),
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.05,
                             ),
-                          );
-                        },
-                        reverse: true,
-                      ),
+                          ),
+                          onChanged: (newValue){
+                            setState(() {
+                              isFahr = newValue!;
+                            });
+                          },
+                          activeColor: Colors.black87,
+                        ),
+                        RadioListTile(
+                          value: false,
+                          groupValue: isFahr,
+                          title: Text(
+                            'Celsius',
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 255, 111, 0),
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.05,
+                            ),
+                          ),
+                          onChanged: (newValue){
+                            setState(() {
+                              isFahr = newValue!;
+                            });
+                          },
+                          activeColor: Colors.black87,
+                        ),
+                        ElevatedButton(
+                          onPressed: _convert,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 234, 137, 63),
+                          ),
+                          child: const Text(
+                            'Convert',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'History',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 234, 137, 63),
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: ListView.builder(
+                              itemCount: _conversionHistory.length,
+                              itemBuilder: (context, index) {
+                                final conversion = _conversionHistory[index];
+                                return ListTile(
+                                  title: Text(
+                                    conversion.isFahrToCelsius
+                                      ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
+                                      : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
