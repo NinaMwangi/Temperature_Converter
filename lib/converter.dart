@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         input: inTemp,
         output: roundedOutTemp,
         isFahrToCelsius: isFahr,
-        );
+      );
 
       _conversionHistory.insert(0, newConversion);
 
@@ -63,11 +63,12 @@ class _HomePageState extends State<HomePage> {
             children: [
               const SizedBox(
                 width: 200.0,
-                child: Text("Temperature Converter",
+                child: Text(
+                  "Temperature Converter",
                   style: TextStyle(
                     color: Color.fromARGB(255, 255, 111, 0),
                     fontSize: 30,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -78,9 +79,9 @@ class _HomePageState extends State<HomePage> {
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Enter Temperature',
-                        labelText: isFahr 
-                        ? '$inTemp entered in Fahrenheit'
-                        : '$inTemp entered in Celsius'
+                        labelText: isFahr
+                            ? '$inTemp entered in Fahrenheit'
+                            : '$inTemp entered in Celsius',
                       ),
                       keyboardType: TextInputType.number,
                       onChanged: (newValue) {
@@ -95,13 +96,13 @@ class _HomePageState extends State<HomePage> {
                       value: true,
                       groupValue: isFahr,
                       title: const Text(
-                        'Fahrenheit', 
+                        'Fahrenheit',
                         style: TextStyle(
                           color: Color.fromARGB(255, 255, 111, 0),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onChanged: (newValue){
+                      onChanged: (newValue) {
                         setState(() {
                           isFahr = newValue!;
                         });
@@ -114,10 +115,11 @@ class _HomePageState extends State<HomePage> {
                       title: const Text(
                         'Celsius',
                         style: TextStyle(
-                          color:Color.fromARGB(255, 255, 111, 0),
-                          fontWeight: FontWeight.bold
-                        ),),
-                      onChanged: (newValue){
+                          color: Color.fromARGB(255, 255, 111, 0),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onChanged: (newValue) {
                         setState(() {
                           isFahr = newValue!;
                         });
@@ -147,6 +149,7 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 20),
                     Expanded(
                       child: Container(
+                        height: 50.0,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 234, 137, 63),
                           borderRadius: BorderRadius.circular(15.0),
@@ -158,20 +161,19 @@ class _HomePageState extends State<HomePage> {
                             return ListTile(
                               title: Text(
                                 conversion.isFahrToCelsius
-                                  ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
-                                  : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
+                                    ? '${conversion.input} Fahrenheit = ${conversion.output} Celsius'
+                                    : '${conversion.input} Celsius = ${conversion.output} Fahrenheit',
                                 style: const TextStyle(color: Colors.white),
                               ),
                             );
                           },
-                          reverse: true,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ]
+            ],
           ),
         ),
       ),
