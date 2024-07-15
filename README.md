@@ -27,3 +27,5 @@ Example:
 F to C: 55.0  => 12.8
 C to F: 3.5 =>  38.3
 The app must look and act consistently in either portrait or landscape orientation.
+
+link to demo video - https://drive.google.com/file/d/1g_WEZs5Pi9LZJZRhfJ7Ox6zuCwldy4RX/view?usp=share_link
